@@ -14,12 +14,15 @@ fi
 ### 2/ MAIN ###
 ###############
 
-# Prevent root from login (you can now connect through SSH, no need that login method anymore) :
+# Prevent root from login (you can now connect through SSH with root, no need that login method anymore from host) :
 if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then
   sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
 fi
 if grep -q "^PermitRootLogin prohibit-password" /etc/ssh/sshd_config; then
   sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config
+fi
+if grep -q "^#PubkeyAuthentication yes" /etc/ssh/sshd_config; then
+  sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config
 fi
 
 # Reset the packages repositories :
@@ -28,7 +31,7 @@ https://mirror.xtom.com.hk/alpine/latest-stable/main
 https://mirror.xtom.com.hk/alpine/latest-stable/community
 # CDL repositories (in case HK ones don't work) :
 https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
-https://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >/etc/apk/repositories
+https://dl-cdn.alpinelinux.org/alpine/latest-stable/community" > /etc/apk/repositories
 
 # Update the packages list :
 apk update
@@ -47,6 +50,21 @@ apk add jq
 
 # Install htop to get a better overview of the hardware consumption and running processes :
 apk add htop
+
+# Install openssl to generate certificates :
+apk add openssl
+
+# Generate the custom unique set of Diffie-Hellman key exchange parameters to prevent the Logjam attack against the TLS protocol :
+mkdir -p /etc/certificates/
+# This operation can take a while (20-60 minutes depending on your CPU)
+openssl dhparam -out /etc/certificates/dhparams.pem 4096
+# Set the right permissions :
+chmod 400 /etc/certificates/dhparams.pem
+
+# Install Intel drivers (since my Intel CPU J4125 embeds an iGPU) :
+apk add mesa-dri-gallium
+apk add libva-intel-driver
+echo "export MESA_LOADER_DRIVER_OVERRIDE=iris" >> /etc/profile
 
 ########################
 ### 3/ HEALTH CHECKS ###
