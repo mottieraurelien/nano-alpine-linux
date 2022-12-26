@@ -28,7 +28,7 @@ rc-update add docker boot
 service docker start
 
 # Define the regular account username :
-echo "Input an username for the regular account : "
+echo "Input an username for the regular account (monkey) : "
 IFS= read -r regularAccountUsername
 
 # Create regular user so that we avoid to use root when there is no need :
