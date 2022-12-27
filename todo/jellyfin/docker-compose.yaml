@@ -1,0 +1,20 @@
+version: "3"
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    network_mode: bridge
+    restart: always
+    devices:
+      - /dev/dri:/dev/dri
+    ports:
+      - 8096:8096 # only HTTP since connected through VPN (wireguard), no need to expose it through HTTPS
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Hong_Kong
+    volumes:
+      - /media/ssd/movies:/movies:ro
+      - /media/ssd/tv:/tv:ro
+      - /root/jellyfin/config:/config
+      - /root/jellyfin/cache:/cache

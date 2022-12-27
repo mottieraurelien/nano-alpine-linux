@@ -60,4 +60,7 @@ if [ -z "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
+# Switch back to root (to be able to install more tools) :
+su - root
+
 exit 0

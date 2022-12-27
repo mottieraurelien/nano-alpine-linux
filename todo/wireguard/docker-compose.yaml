@@ -1,9 +1,10 @@
-version: "2.1"
+version: "3"
 services:
   wireguard:
     image: lscr.io/linuxserver/wireguard:latest
     container_name: wireguard
     network_mode: host
+    restart: always
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -11,12 +12,11 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Asia/Hong_Kong
-      - SERVERURL=125.59.217.57 # Public IP (cannot specify domain since Cloudflare blocks everything except a few HTTP/S ports)
-      - SERVERPORT=21022 # Port to open in the router (UDP)
+      - SERVERURL=125.59.217.57
+      - SERVERPORT=21022
       - PEERS=5
       - PEERDNS=1.1.1.1
       - INTERNAL_SUBNET=192.168.11.0
     volumes:
       - /root/wireguard/config:/config
       - /lib/modules:/lib/modules
-    restart: unless-stopped

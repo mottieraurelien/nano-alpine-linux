@@ -14,6 +14,9 @@ fi
 ### 2/ MAIN ###
 ###############
 
+# TODO : create dedicate group
+# https://www.arubacloud.com/tutorial/how-to-create-an-intranet-with-samba-and-openvpn.aspx
+
 # Update the packages list :
 apk update
 
