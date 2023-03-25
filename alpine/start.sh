@@ -20,7 +20,7 @@ https://mirror.xtom.com.hk/alpine/latest-stable/main
 https://mirror.xtom.com.hk/alpine/latest-stable/community
 # CDL repositories (in case HK ones don't work, you can comment the HK ones and uncomment these ones below) :
 # https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
-# https://dl-cdn.alpinelinux.org/alpine/latest-stable/community" > /etc/apk/repositories
+# https://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >/etc/apk/repositories
 
 # Update the packages list :
 apk update
@@ -42,6 +42,12 @@ apk add htop
 
 # Install openssl to generate certificates :
 apk add openssl
+
+# Initialise the SSH configuration to get access to nano remotely :
+mkdir -p "$HOME"/.ssh
+authorizedFile="$HOME/$(grep AuthorizedKeysFile /etc/ssh/sshd_config | cut -d$'\t' -f2)"
+touch "$authorizedFile"
+echo "export AUTHORIZED_KEYS_FILE=$authorizedFile" >> /etc/profile
 
 # Generate the custom unique set of Diffie-Hellman key exchange parameters to prevent the Logjam attack against the TLS protocol :
 mkdir -p /etc/certificates/

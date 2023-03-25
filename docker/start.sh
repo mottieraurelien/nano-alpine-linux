@@ -37,12 +37,12 @@ adduser "$regularAccountUsername"
 # Add the current user to the docker group (so that no need to be root to run docker commands) :
 addgroup "$regularAccountUsername" docker
 
-# Leave the root session to switch to the regular account :
-su - "$regularAccountUsername"
-
 ########################
 ### 3/ HEALTH CHECKS ###
 ########################
+
+# Leave the root session to switch to the regular account :
+su - "$regularAccountUsername"
 
 # [Regular account has been successfully created]
 if [ "$(whoami)" != "$regularAccountUsername" ]; then

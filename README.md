@@ -1,21 +1,11 @@
 # homelab-alpine-linux
 
 Setting up a whole homelab from scratch with :
-- Google domain, GoDaddy or any other domain providers
-- Cloudflare to handle the HTTP/HTTPS traffic and protect your domain against DDOS and a bunch of other attacks
-- Alpine Linux
-- Docker
-- NGINX as reverse proxy
-
-## Prerequisites :
-- Download Alpine Linux **standard** edition : https://alpinelinux.org/downloads/
-- Prepare a bootable USB stick (using Rufus) or create a virtual machine
-- A wired server (Gigabit+ ethernet cable plugged or USB to Gigabit+ ethernet adapter), we won't rely on any WI-FI
-connection for higher bandwidth and lower latency
-
-> 2.5Gbps and 5Gbps ethernet connections are also very welcome! Considering that our server may have an SSD, even mSata
-> or 2.5 formats, they can easily handle 300 to 500 Mo/s read and write operations, which is much higher than a regular
-> gigabit connection (usually 105-115 Mo/s at best). 2.5Gbps connections are cheap and not overkill these days.
+- Google domain, GoDaddy or anything else as domain provider
+- Cloudflare as HTTP/HTTPS traffic manager and protector against DDOS and a bunch of other attacks
+- Alpine Linux as operating system since light and secure
+- NGINX as reverse proxy (using alternative like Traefik is also fine, as long as it remains convenient to maintain)
+- Docker as services manager (portainer, nextcloud, cicd, wireguard, jellyfin, ...)
 
 ## Get a domain
 Name and extension don't matter, as long as you have a real domain you own (even the cheapest one is fine).
@@ -23,31 +13,72 @@ A domain is required to expose your homelab to the outside world through HTTPS u
 > `homelab.dev`, `homelab.hk.com`, `homelab.io`, `homelab.tech`, ...
 
 Since you own a domain, you will also own all its subdomains that will create later on :
-> `portainer.homelab.dev`, `nextcloud.homelab.hk.com`, `cicd.homelab.io`, `plex.homelab.tech`, ...
+> `portainer.homelab.dev`, `nextcloud.homelab.hk.com`, `cicd.homelab.io`, `jellyfin.homelab.tech`, ...
+
+## Prepare SSH authentication
+
+Using your laptop or desktop (not the server, you got it), open Terminal and then :
+
+- Create a folder that will contain SSH keys (may already exist) : `mkdir $HOME/.ssh`
+- Generate your SSH keys (RSA 4096) : `ssh-keygen -t ed25519 -a 256 -f $HOME/.ssh/id_ed25519_nano`
+
+Notice :
+
+- You are encouraged to specify a passphrase so that you protect your private key properly
+- Your private key will be `$HOME/.ssh/id_ed25519_nano` and your public key is `$HOME/.ssh/id_ed25519_nano.pub`
+- Do not share your private key with anything nor anyone, your private key must never (ever) leave your laptop
+
+No worry, you will add your public key in the SSH server configuration later on. but not now, not yet.
 
 ## Rely on Cloudflare
 - Create new account
 - Add the (Google) domain you own
-- Identify where you can get your Cloudflare token
 - Grab the Cloudflare DNS (two DNS addresses)
 - Update the DNS in your Google domain using the ones from Cloudflare
-- Wait for Google (a day or two) to update the DNS so that your domain uses Cloudflare DNS
-
-## Preparing a virtual machine
-
-- Download and install QEMU : https://www.qemu.org/download/
-- Once QEMU is installed, add the path of QEMU folder to the PATH (user environment variable)
-- Open Powershell and run the following commands :
-    - Create a folder that will contain your QEMU virtual drives : `mkdir $HOME/.qcow2`
-    - Create a virtual drive for Alpine Linux : `qemu-img create -f qcow2 $HOME/.qcow2/alpine-linux-5G.qcow2 5G` since
-      5GB should be enough to play around
-    - Install Alpine Linux on the virtual drive using the
-      ISO : `qemu-system-x86_64 -boot d -cdrom $HOME/Downloads/alpine-standard-3.16.1-x86_64.iso -drive file=$HOME/.qcow2/alpine-linux-5G.qcow2,media=disk,if=virtio -m 8192 -smp 4 -display gtk` (
-      this will start the installation process, see step below)
-    - Boot Alpine Linux from the virtual
-      drive : `qemu-system-x86_64 -boot c -drive file=$HOME/.qcow2/alpine-linux-5G.qcow2,media=disk,if=virtio -m 8192 -smp 4 -net nic,model=virtio -net user,hostfwd=tcp::22-:22 -display gtk`
+- Identify where you can get your Cloudflare token
+- Wait for Google (a day or two) to update the DNS so that your domain uses Cloudflare DNS (no choice, you have to wait)
 
 ## Installing Alpine Linux
+
+While Google is taking into consideration your new DNS server settings (Google needs a day or two to apply them), you
+can start preparing your server.
+
+### Option 1 : using a virtual machine (QEMU)
+
+#### Contexts :
+- You don't have the server yet, but you still want to see where this tutorial may lead you so that you already know the steps the day you get the server
+- You already have the server, but you were considering migrating to something else, and you are still exploring options like this one before taking any decision
+
+#### Prerequisites :
+- Download and install QEMU : https://www.qemu.org/download/
+- Once QEMU is installed, add the path of QEMU folder to the PATH (Windows user environment variable)
+
+#### First steps :
+- Open Powershell and run the following commands :
+    - Create a folder that will contain your QEMU virtual drives : `mkdir $HOME/.qcow2`
+    - Create a virtual drive for Alpine Linux : `qemu-img create -f qcow2 $HOME/.qcow2/alpine-linux-5G.qcow2 5G` since 5GB should be enough to play around
+    - Install Alpine Linux on the virtual drive using the ISO : `qemu-system-x86_64 -boot d -cdrom $HOME/Downloads/alpine-standard-3.16.1-x86_64.iso -drive file=$HOME/.qcow2/alpine-linux-5G.qcow2,media=disk,if=virtio -m 8192 -smp 4 -display gtk` (
+      this will start the installation process, see step below)
+    - Boot Alpine Linux from the virtual drive : `qemu-system-x86_64 -boot c -drive file=$HOME/.qcow2/alpine-linux-5G.qcow2,media=disk,if=virtio -m 8192 -smp 4 -net nic,model=virtio -net user,hostfwd=tcp::22-:22 -display gtk`
+
+### Option 2 : using a server
+
+Mine is a teeny-tiny one : GMK NucBox S
+- CPU Intel J4125
+- RAM LPDDR4 8GB dual-channel (soldered)
+- SSD mSATA 256GB
+- USB to Gigabit+ ethernet adapter `TP-Link UE305`
+
+#### Prerequisites :
+- Download Alpine Linux **standard** edition : https://alpinelinux.org/downloads/
+- Prepare a bootable USB stick (using Rufus) or create a virtual machine
+- A wired server (Gigabit+ ethernet cable plugged or USB to Gigabit+ ethernet adapter), we won't rely on any WI-FI
+  connection for higher bandwidth and lower latency
+> 2.5Gbps and 5Gbps ethernet connections are also very welcome! Considering that our server may have an SSD, even mSata
+> or 2.5 formats, they can handle over 300 Mo/s read and write operations, which is much higher than a regular
+> gigabit connection (usually 105-115 Mo/s at best). 2.5Gbps connections are cheap and not overkill these days.
+
+#### First steps :
 
 - Boot Alpine Linux (bare metal, QEMU, VirtualBox, Proxmox, ... whatever)
 - Localhost login : `root`
@@ -62,9 +93,9 @@ Since you own a domain, you will also own all its subdomains that will create la
     - HTTP/FTP proxy URL : `none` (default)
     - NTP client : `chrony` (default)
     - Enter mirror : `f` so that it selects the best one wherever your server is
-    - Setup a user : `no` (default) since we will do that later
+    - Setup a user : `no` (default) since we will do that later when installing docker and docker-compose
     - SSH server : `openssh` (default)
-    - Allow root SSH login : `no` since we will allow only "regular" users to connect to the server remotely
+    - Allow root SSH login : `yes` since we will disable it when configuring SSH connection (using non-root account)
     - Disk to use : pick the one from the available disks list in your console (it should be `sda` or `vda`)
     - How we will the selected disk : `sys`
     - Erase the disk : `y`
@@ -79,35 +110,12 @@ Since you own a domain, you will also own all its subdomains that will create la
 - Port forwarding TCP+UDP/80 and TCP+UDP/443 to the private IP address of the server
 - Reboot your server so that your router assign the right private IP address : `reboot`
 
-## Generating RSA keys from the server
+## Now, it's time to play
+Alpine Linux has been successfully installed and rebooted.
+I also notice that nano is now using the private IP address it's supposed to use.
 
-Using your laptop, open Powershell and then :
-
-- Create a folder that will contain SSH keys (may already exist) : `mkdir $HOME/.ssh`
-- Generate your SSH keys (RSA 4096) : `ssh-keygen -t rsa -b 4096 -m PEM -f $HOME/.ssh/id_rsa_alpine`
-
-Notice :
-
-- You are encouraged to specify a passphrase so that you protect your private key properly
-- Your private RSA will be `$HOME/.ssh/id_rsa_alpine` and your public RSA key is `$HOME/.ssh/id_rsa_alpine.pub`
-- Do not share your private key with anything nor anyone, your private key must never ever leave your laptop
-
-
-**TODO** add the public key to ~/.ssh/authorized_keys ...
-
-
-## Adding the RSA key to the server (TODO)
-
-Now Alpine Linux is installed and your SSH keys generated, we need to update a few OpenSSH settings so that the SSH
-server allows you to connect using SSH keys. In order to add the new SSH public key, you need to run these commands :
-From your computer :
-
-- Identify your public SSH key using PowerShell : `Get-Content -Path $HOME/.ssh/id_rsa_alpine.pub`
-  From your server :
-- Identify the file that contains the authorized keys : 'grep "AuthorizedKeysFile" /etc/ssh/sshd_config'
-- Add your public key to the authorized keys : `echo `
-
-Try to connect to the server to check if the SSH connection is working fine :
-
-## Running a script
-`sh start.sh`
+- `git clone https://github.com/mottieraurelien/nano-alpine-linux.git $HOME/nano-alpine-linux`
+- `sh $HOME/nano-alpine-linux/alpine/start.sh`
+- Generate the private key from the laptop : 
+- `sh ssh/start.sh`
+- `sh docker/start.sh`

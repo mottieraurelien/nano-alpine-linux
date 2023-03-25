@@ -14,6 +14,10 @@ fi
 ### 2/ MAIN ###
 ###############
 
+# Check that the authorizes keys file contains one public SSH key at least :
+numberOfAuthorizedKeys=$(wc -l "$AUTHORIZED_KEYS_FILE")
+
+
 # Prevent root from login (you can now connect through SSH with root, no need that login method anymore from host) :
 if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then
   sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
