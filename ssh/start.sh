@@ -23,7 +23,7 @@ if [ "$numberOfAuthorizedKeys" -eq "0" ]; then
 fi
 
 # Prevent using root when connecting to the server using SSH :
-sed -i 's/^PermitRootLogin.*/PermitRootLogin no/g'
+sed -i 's/^PermitRootLogin.*/PermitRootLogin no/g' /etc/ssh/sshd_config
 
 ########################
 ### 3/ HEALTH CHECKS ###
