@@ -24,28 +24,13 @@ apk add docker docker-compose
 rc-update add docker boot
 service docker start
 
-# Define the regular account username :
-echo "Input an username for the regular account : "
-IFS= read -r regularAccountUsername
-
-# Create regular user so that we avoid to use root when there is no need :
-adduser "$regularAccountUsername"
-
 # Add the current user to the docker group (so that no need to be root to run docker commands) :
-addgroup "$regularAccountUsername" docker
+addgroup "$REGULAR_USER" docker
 
 ########################
 ### 3/ HEALTH CHECKS ###
 ########################
 
-# Leave the root session to switch to the regular account :
-su - "$regularAccountUsername"
-
-# [Regular account has been successfully created]
-if [ "$(whoami)" != "$regularAccountUsername" ]; then
-  echo "Regular account creation failed"
-  exit 1
-fi
 # [docker has been successfully installed and regular account can run commands]
 if [ -z "$(command -v docker)" ]; then
   echo "Docker installation failed"
@@ -56,8 +41,5 @@ if [ -z "$(command -v docker-compose)" ]; then
   echo "Docker-compose installation failed"
   exit 1
 fi
-
-# Switch back to root (to be able to install more tools) :
-su - root
 
 exit 0
