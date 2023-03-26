@@ -22,29 +22,35 @@ https://mirror.xtom.com.hk/alpine/latest-stable/community" > /etc/apk/repositori
 # Update the packages list :
 apk update
 
-# Upgrade the packages :
+# Upgrade the existing packages :
 apk upgrade
 
-# Install nano to easily edit files :
-apk add nano
+# Install a bunch of new packages:
+apk add nano curl jq htop openssl
 
-# Install curl to easily call APIs :
-apk add curl
+# Define the regular account username (so that we don't use root) :
+echo "Input an username for the regular account : "
+IFS= read -r regularAccountUsername
 
-# Install jq to easily parse JSON payloads :
-apk add jq
+# Create regular user so that we avoid using root:
+adduser "$regularAccountUsername"
 
-# Install htop to get a better overview of the hardware consumption and running processes :
-apk add htop
+# Add the regular user as environment variable in root sessions:
+echo "export REGULAR_USER=$regularAccountUsername" >> "$HOME"/.profile
+chmod +x "$HOME"/.profile
 
-# Install openssl to generate certificates :
-apk add openssl
+# Leave the root session to switch to the regular account :
+su - "$regularAccountUsername"
 
 # Initialise the SSH configuration to get access to nano remotely :
 mkdir -p "$HOME"/.ssh
 authorizedFile="$HOME/$(grep AuthorizedKeysFile /etc/ssh/sshd_config | cut -d$'\t' -f2)"
 touch "$authorizedFile"
-echo "export AUTHORIZED_KEYS_FILE=$authorizedFile" >> /etc/profile
+echo "export AUTHORIZED_KEYS_FILE=$authorizedFile" >> "$HOME"/.profile
+chmod +x "$HOME"/.profile
+
+# Leave the regular account session (to go back to root):
+exit
 
 # Generate the custom unique set of Diffie-Hellman key exchange parameters to prevent the Logjam attack against the TLS protocol :
 mkdir -p /etc/certificates/
