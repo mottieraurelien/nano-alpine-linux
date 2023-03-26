@@ -22,7 +22,7 @@ Since you own a domain, you will also own all its subdomains that will create la
 Using your laptop or desktop (not the server, you got it), open Terminal and then :
 
 - Create a folder that will contain SSH keys (may already exist) : `mkdir $HOME/.ssh`
-- Generate your SSH keys (RSA 4096) : `ssh-keygen -t ed25519 -a 256 -f $HOME/.ssh/id_ed25519_nano`
+- Generate your SSH keys : `ssh-keygen -t ed25519 -a 256 -f $HOME/.ssh/id_ed25519_nano`
 
 Notice :
 
@@ -131,20 +131,29 @@ specifications : [GMK NucBox S](https://www.gmktec.com/products/nucbox-most-powe
         - IP `192.168.10.10`
 - Reboot your server so that your router assign the right private IP address : `reboot`
 
-## Defining the SSH-key based authentication
+## Defining the key-based authentication
 
 Alpine Linux has been successfully installed and rebooted.
 I also notice that nano is now using the private IP address it's supposed to use (`ifconfig`).
 
-We can now focus on disabling the account based authentication and rely on the SSH key based authentication only.
+We can now focus on enabling the SSH key-based authentication.
 
 - Create a workspace folder: `mkdir -p $HOME/workspace/ && cd $HOME/workspace/`
 - Clone the git repository: `git clone https://github.com/mottieraurelien/nano-alpine-linux.git`
 - Go into the cloned repository: `cd nano-alpine-linux`
 - Apply the basic configuration: `./alpine/start.sh`
-- Connect to the server (from your laptop) using root username/password authentication so that you can add your public
-  RSA key before turning off the root username/password authentication:
-    - `ssh root@192.168.10.10`
-    - Input the root password
-    - Add your public RSA key: TODO
-    - `exit`
+- Connect to the server (from your laptop) using credentials-based authentication: `ssh root@192.168.10.10`
+- Identify where you need to add your public key : `echo $AUTHORIZED_KEYS_FILE`
+- Add your public key (ed25519) into the authorized keys file: `vi $AUTHORIZED_KEYS_FILE` and paste the content of your
+  public key (ed25519)
+- Exit the current SSH connection: `exit`
+- Open a new SSH connection using the key-based authentication to validate this new SSH authentication
+  mode (the only one to consider from now on): `ssh -i $HOME/.ssh/id_ed25519_nano root@192.168.10.10`
+
+## Disabling the obsolete SSH credentials-based authentication
+
+Since we managed to set up the key-based authentication, we can now disable the credentials-based authentication:
+
+- Go to the right folder containing the script: `cd $HOME/workspace/nano-alpine-linux/`
+- Run the script that will disable the credentials-based authentication: `./ssh/start.sh`
+

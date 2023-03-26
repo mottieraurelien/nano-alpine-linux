@@ -17,18 +17,15 @@ fi
 # Update the packages list :
 apk update
 
-# Install docker :
-apk add docker
-
-# Install docker-compose :
-apk add docker-compose
+# Install docker and docker-compose :
+apk add docker docker-compose
 
 # Define docker as a system service :
 rc-update add docker boot
 service docker start
 
 # Define the regular account username :
-echo "Input an username for the regular account (monkey) : "
+echo "Input an username for the regular account : "
 IFS= read -r regularAccountUsername
 
 # Create regular user so that we avoid to use root when there is no need :

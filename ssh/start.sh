@@ -14,9 +14,12 @@ fi
 ### 2/ MAIN ###
 ###############
 
-# Check that the authorizes keys file contains one public SSH key at least :
-numberOfAuthorizedKeys=$(wc -l "$AUTHORIZED_KEYS_FILE")
-
+# Check that the authorizes keys file contains one public key at least :
+numberOfAuthorizedKeys=$(cat "$AUTHORIZED_KEYS_FILE" | wc -l)
+if [ "$numberOfAuthorizedKeys" -eq "0" ]; then
+  echo "Please set up the key-based authentication before disabling the credentials-based authentication."
+  exit
+fi
 
 # Prevent root from login (you can now connect through SSH with root, no need that login method anymore from host) :
 if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then
@@ -34,4 +37,3 @@ fi
 ########################
 
 exit 0
-
