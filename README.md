@@ -141,7 +141,7 @@ We can now focus on disabling the account based authentication and rely on the S
 - Create a workspace folder: `mkdir -p $HOME/workspace/ && cd $HOME/workspace/`
 - Clone the git repository: `git clone https://github.com/mottieraurelien/nano-alpine-linux.git`
 - Go into the cloned repository: `cd nano-alpine-linux`
-- Apply the basic configuration: `alpine/start.sh`
+- Apply the basic configuration: `./alpine/start.sh`
 - Connect to the server (from your laptop) using root username/password authentication so that you can add your public
   RSA key before turning off the root username/password authentication:
     - `ssh root@192.168.10.10`
