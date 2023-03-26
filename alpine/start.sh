@@ -14,13 +14,10 @@ fi
 ### 2/ MAIN ###
 ###############
 
-# Reset the packages repositories :
+# Reset the packages repositories and enable the community repository :
 echo "# HK repositories (closest ones) :
 https://mirror.xtom.com.hk/alpine/latest-stable/main
-https://mirror.xtom.com.hk/alpine/latest-stable/community
-# CDL repositories (in case HK ones don't work, you can comment the HK ones and uncomment these ones below) :
-# https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
-# https://dl-cdn.alpinelinux.org/alpine/latest-stable/community" > /etc/apk/repositories
+https://mirror.xtom.com.hk/alpine/latest-stable/community" > /etc/apk/repositories
 
 # Update the packages list :
 apk update
