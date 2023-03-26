@@ -48,43 +48,21 @@ can start preparing your server.
 
 ### Option 1 : using a virtual machine (QEMU)
 
-#### Contexts :
+#### Hardware requirements
 
-- You don't have the server yet, but you still want to see where this tutorial may lead you so that you already know the
-  steps the day you get the server
-- You already have the server, but you were considering migrating to something else, and you are still exploring options
-  like this one before taking any decision
-
-#### Prerequisites :
-
-- Download and install QEMU : https://www.qemu.org/download/
-- Once QEMU is installed, add the path of QEMU folder to the PATH (Windows user environment variable)
-
-#### First steps :
-
-- Open Powershell and run the following commands :
-    - Create a folder that will contain your QEMU virtual drives : `mkdir $HOME/.qcow2`
-    - Create a virtual drive for Alpine Linux : `qemu-img create -f qcow2 $HOME/.qcow2/alpine-linux-5G.qcow2 5G` since
-      5GB should be enough to play around
-    - Install Alpine Linux on the virtual drive using the
-      ISO : `qemu-system-x86_64 -boot d -cdrom $HOME/Downloads/alpine-standard-3.16.1-x86_64.iso -drive file=$HOME/.qcow2/alpine-linux-5G.qcow2,media=disk,if=virtio -m 8192 -smp 4 -display gtk` (
-      this will start the installation process, see step below)
-    - Boot Alpine Linux from the virtual
-      drive : `qemu-system-x86_64 -boot c -drive file=$HOME/.qcow2/alpine-linux-5G.qcow2,media=disk,if=virtio -m 8192 -smp 4 -net nic,model=virtio -net user,hostfwd=tcp::22-:22 -display gtk`
-
-### Option 2 : using a server
-
-Mine is a teeny-tiny one : GMK NucBox S
+My server is a palm-size computer with low hardware
+specifications : [GMK NucBox S](https://www.gmktec.com/products/nucbox-most-powerful-palm-sized-4k-mini-pc-1?variant=c932a16c-0219-4b10-ace4-4d8650f33ade)
 
 - CPU Intel J4125
 - RAM LPDDR4 8GB dual-channel (soldered)
 - SSD mSATA 256GB
 - USB to Gigabit+ ethernet adapter `TP-Link UE305`
+- MicroSD card slot
 
 #### Prerequisites :
 
 - Download Alpine Linux **standard** edition : https://alpinelinux.org/downloads/
-- Prepare a bootable USB stick (using Rufus) or create a virtual machine
+- Prepare a bootable USB stick (or a MicroSD card in my case) using Rufus
 - A wired server (Gigabit+ ethernet cable plugged or USB to Gigabit+ ethernet adapter), we won't rely on any WI-FI
   connection for higher bandwidth and lower latency
 
@@ -104,16 +82,15 @@ Mine is a teeny-tiny one : GMK NucBox S
     - Add any manual network configuration : `none`
     - No need to initialize any other network interface (since `eth0` is what we wanted): `done`
     - No need to bring any other manual network configuration: `n` (default)
-    - New root
-      password : `{you decide, must be strong, recommend 12+ chars with figures, lower+upper case and special chars}`
-    - Timezone : `?`(so that you can see the list, in my case `Hongkong`
+    - New root password : `{must be strong: 12+ chars with figures, lower+upper case and special chars}`
+    - Timezone : `?` (so that you can see the list, in my case `Hongkong`
     - HTTP/FTP proxy URL : `none` (default)
     - NTP client : `chrony` (default)
     - Enter mirror : `f` so that it selects the best one wherever your server is
     - Setup a user : `no` (default) since we will do that later when installing docker and docker-compose
     - SSH server : `openssh` (default)
     - Allow root SSH login : `yes` since we will disable it when configuring SSH connection (using non-root account)
-    - Disk to use : pick the one from the available disks list in your console (it should be `sda` or `vda`)
+    - Disk to use : pick the one from the available disks list in your console (it should be `sda`)
     - How we will the selected disk : `sys`
     - Erase the disk : `y`
 - Since the installation is now done :
@@ -122,18 +99,18 @@ Mine is a teeny-tiny one : GMK NucBox S
     - Start your server
     - Login using root
     - Install Git : `apk update && apk upgrade && apk add git`
-    - Get and write down the MAC address of your network controller : `ifconfig | grep HWaddr | cut -d" " -f11` (should
+    - Write down the MAC address of your network controller : `ifconfig | grep HWaddr | cut -d" " -f11` (should
       look like `xx:xx:xx:xx:xx:xx`)
 
 ## Router settings
 
-- Get into your router settings (usually web interface) (as far I'm concerned: `http://192.168.10.1/`)
+- Get into your router settings (usually web interface), as far I'm concerned: `http://192.168.10.1/`
 - Add the static DHCP bond based on the MAC address of the server's network controller:
     - Assign IP address: input the private IP address you want the server to always use (as far I'm
-      concerned: `192.168.10.10`)
+      concerned I choose `192.168.10.10`)
     - To MAC address: input the one you got in the previous step, it should look like `xx:xx:xx:xx:xx:xx`
-    - Validate the change
-- Add a bunch of port forwarding rules (private IP refers to the one you defined right above in your static DHCP bond):
+    - Validate the static DHCP bond
+- Add a bunch of port forwarding rules (`IP` refers to the private IP you defined above in your static DHCP bond):
     - Rule named `HTTP`:
         - External port `80`
         - Internal port `80`
