@@ -38,6 +38,7 @@ adduser "$regularAccountUsername"
 # Add the regular user as environment variable in root sessions:
 echo "export REGULAR_USER=$regularAccountUsername" >> "$HOME"/.profile
 chmod +x "$HOME"/.profile
+source "$HOME"/.profile
 
 # Leave the root session to switch to the regular account :
 su - "$regularAccountUsername"
