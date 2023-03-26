@@ -96,7 +96,7 @@ specifications : [GMK NucBox S](https://www.gmktec.com/products/nucbox-most-powe
     - Once off, unplug the USB stick you used to install Alpine Linux
     - Start your server
     - Login using root
-    - Install Git : `apk update && apk upgrade && apk add git`
+    - Install Git and bash support : `apk update && apk upgrade && apk add git bash`
     - Write down the MAC address of your network controller : `ifconfig | grep HWaddr | cut -d" " -f11` (should
       look like `xx:xx:xx:xx:xx:xx`)
 
