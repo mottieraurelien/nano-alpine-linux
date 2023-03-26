@@ -46,9 +46,7 @@ No worry, you will add your public key in the SSH server configuration later on.
 While Google is taking into consideration your new DNS server settings (Google needs a day or two to apply them), you
 can start preparing your server.
 
-### Option 1 : using a virtual machine (QEMU)
-
-#### Hardware requirements
+### Hardware requirements
 
 My server is a palm-size computer with low hardware
 specifications : [GMK NucBox S](https://www.gmktec.com/products/nucbox-most-powerful-palm-sized-4k-mini-pc-1?variant=c932a16c-0219-4b10-ace4-4d8650f33ade)
@@ -59,7 +57,7 @@ specifications : [GMK NucBox S](https://www.gmktec.com/products/nucbox-most-powe
 - USB to Gigabit+ ethernet adapter `TP-Link UE305`
 - MicroSD card slot
 
-#### Prerequisites :
+### Prerequisites :
 
 - Download Alpine Linux **standard** edition : https://alpinelinux.org/downloads/
 - Prepare a bootable USB stick (or a MicroSD card in my case) using Rufus
@@ -70,7 +68,7 @@ specifications : [GMK NucBox S](https://www.gmktec.com/products/nucbox-most-powe
 > or 2.5 formats, they can handle over 300 Mo/s read and write operations, which is much higher than a regular
 > gigabit connection (usually 105-115 Mo/s at best). 2.5Gbps connections are cheap and not overkill these days.
 
-#### First steps :
+### First steps :
 
 - Boot Alpine Linux (bare metal, QEMU, VirtualBox, Proxmox, ... whatever)
 - Localhost login : `root`
@@ -102,7 +100,7 @@ specifications : [GMK NucBox S](https://www.gmktec.com/products/nucbox-most-powe
     - Write down the MAC address of your network controller : `ifconfig | grep HWaddr | cut -d" " -f11` (should
       look like `xx:xx:xx:xx:xx:xx`)
 
-## Router settings
+## Configuring the router
 
 - Get into your router settings (usually web interface), as far I'm concerned: `http://192.168.10.1/`
 - Add the static DHCP bond based on the MAC address of the server's network controller:
@@ -133,14 +131,16 @@ specifications : [GMK NucBox S](https://www.gmktec.com/products/nucbox-most-powe
         - IP `192.168.10.10`
 - Reboot your server so that your router assign the right private IP address : `reboot`
 
-## Now, it's time to play
+## Defining the SSH-key based authentication
 
 Alpine Linux has been successfully installed and rebooted.
 I also notice that nano is now using the private IP address it's supposed to use (`ifconfig`).
 
+We can now focus on disabling the account based authentication and rely on the SSH key based authentication only.
+
 - Create a workspace folder: `mkdir -p $HOME/workspace/ && cd $HOME/workspace/`
-- Clone the git repository to configure your server
-  properly: `git clone https://github.com/mottieraurelien/nano-alpine-linux.git && cd nano-alpine-linux.git`
+- Clone the git repository: `git clone https://github.com/mottieraurelien/nano-alpine-linux.git`
+- Go into the cloned repository: `cd nano-alpine-linux`
 - Apply the basic configuration: `alpine/start.sh`
 - Connect to the server (from your laptop) using root username/password authentication so that you can add your public
   RSA key before turning off the root username/password authentication:
@@ -148,5 +148,3 @@ I also notice that nano is now using the private IP address it's supposed to use
     - Input the root password
     - Add your public RSA key: TODO
     - `exit`
-- `sh ssh/start.sh` (will turn off the root username/password authentication)
-- `sh docker/start.sh`
