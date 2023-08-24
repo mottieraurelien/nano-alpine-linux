@@ -24,7 +24,6 @@ apk update
 apk add samba
 
 # Create the folder that will host the media files to share over network :
-mkdir -p /DATA/media
 mkdir -p /DATA/media/movies
 mkdir -p /DATA/media/tv
 
