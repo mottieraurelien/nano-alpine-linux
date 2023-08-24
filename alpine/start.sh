@@ -26,7 +26,7 @@ apk update
 apk upgrade
 
 # Install a bunch of new packages:
-apk add ca-certificates curl htop jq nano openssl
+apk add ca-certificates curl htop jq nano nmap openssl
 
 # Define the regular account username (so that we don't use root) :
 echo "Input an username for the regular account : "
