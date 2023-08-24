@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     network_mode: "bridge"
     ports:
-      - 9443:9443
+      - "9443:9443"
     volumes:
       - /etc/certificates:/certs:ro
       - /pvs/portainer/data:/data:rw
