@@ -3,20 +3,20 @@ services:
   wireguard:
     image: lscr.io/linuxserver/wireguard:latest
     container_name: wireguard
-    network_mode: host
     restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
+    network_mode: host
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Asia/Hong_Kong
       - SERVERURL=125.59.217.57
       - SERVERPORT=21022
-      - PEERS=5
+      - PEERS=10
       - PEERDNS=1.1.1.1
       - INTERNAL_SUBNET=192.168.11.0
     volumes:
-      - /root/wireguard/config:/config
-      - /lib/modules:/lib/modules
+      - /lib/modules:/lib/modules:ro
+      - /pvs/wireguard/config:/config:rw
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE

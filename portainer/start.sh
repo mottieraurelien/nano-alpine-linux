@@ -14,14 +14,14 @@ fi
 ### 2/ MAIN ###
 ###############
 
-# Shutdown WireGuard if exists :
+# Shutdown Portainer if exists :
 docker compose down
-rm -rf /pvs/wireguard/config
+rm -rf /pvs/portainer/data
 
 # Create the persistent volume :
-mkdir -p /pvs/wireguard/config
+mkdir -p /pvs/portainer/data
 
-# Run WireGuard :
+# Run Portainer :
 docker compose up --detach --force-recreate
 
 # Success :

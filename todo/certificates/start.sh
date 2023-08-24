@@ -10,19 +10,22 @@ if [ "$(whoami)" != "root" ]; then
   exit 1
 fi
 
+# [curl is available]
+if [ -z "$(command -v curl)" ]; then
+  apk update && apk add curl
+fi
+
 ###############
 ### 2/ MAIN ###
 ###############
 
-# Shutdown WireGuard if exists :
-docker compose down
-rm -rf /pvs/wireguard/config
+# Cloudflare email input
+# Cloudflare API key
 
-# Create the persistent volume :
-mkdir -p /pvs/wireguard/config
+# Try login
 
-# Run WireGuard :
-docker compose up --detach --force-recreate
+# POST certificate
 
-# Success :
-exit 0
+########################
+### 3/ HEALTH CHECKS ###
+########################

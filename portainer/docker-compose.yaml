@@ -1,0 +1,18 @@
+version: "3"
+services:
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: unless-stopped
+    network_mode: bridge
+    ports:
+      - "9443:9443"
+    volumes:
+      - /etc/certificates:/certs:ro
+      - /pvs/portainer/data:/data:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    security_opt:
+      - no-new-privileges:true
+    command:
+      --sslcert /certs/cert.crt
+      --sslkey /certs/private.key
