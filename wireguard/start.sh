@@ -16,7 +16,7 @@ fi
 
 # Shutdown WireGuard if exists :
 docker compose down
-rm -rf /pvs/wireguard/config
+rm -rf /pvs/wireguard
 
 # Create the persistent volume :
 mkdir -p /pvs/wireguard/config

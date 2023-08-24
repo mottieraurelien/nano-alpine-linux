@@ -16,7 +16,7 @@ fi
 
 # Shutdown Portainer if exists :
 docker compose down
-rm -rf /pvs/portainer/data
+rm -rf /pvs/portainer
 
 # Create the persistent volume :
 mkdir -p /pvs/portainer/data
