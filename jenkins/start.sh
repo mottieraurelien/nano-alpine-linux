@@ -27,15 +27,16 @@ addgroup jenkins docker
 mkdir -p /pvs/jenkins && chown -R jenkins:jenkins /pvs/jenkins
 
 # Export jenkins user id and group id (since we will use a docker bind volume) :
-#JENKINS_UID="$(grep -e "^jenkins" /etc/passwd | cut -d":" -f3)"
-#export JENKINS_UID
-#JENKINS_GID="$(grep -e "^jenkins" /etc/passwd | cut -d":" -f4)"
-#export JENKINS_GID
+sed -i '/export JENKINS_UID=/d' "$HOME"/.profile
+sed -i '/export JENKINS_GID=/d' "$HOME"/.profile
+JENKINS_UID="$(grep -e "^jenkins" /etc/passwd | cut -d":" -f3)"
+echo "export JENKINS_UID=$JENKINS_UID" >>"$HOME"/.profile
+JENKINS_GID="$(grep -e "^jenkins" /etc/passwd | cut -d":" -f4)"
+echo "export JENKINS_GID=$JENKINS_GID" >>"$HOME"/.profile
+source "$HOME"/.profile
 
 # Run Jenkins :
-JENKINS_UID="$(grep -e "^jenkins" /etc/passwd | cut -d":" -f3)" \
- JENKINS_GID="$(grep -e "^jenkins" /etc/passwd | cut -d":" -f4)" \
- docker compose up --detach --force-recreate
+docker compose up --detach --force-recreate
 
 # Success :
 exit 0
