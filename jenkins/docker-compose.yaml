@@ -5,7 +5,7 @@ services:
     container_name: jenkins
     restart: unless-stopped
     network_mode: bridge
-    user: "${JENKINS_UID}:${JENKINS_GID}"
+    user: ${JENKINS_UID}:${JENKINS_GID}
     ports:
       - "18080:8080"
     security_opt:
