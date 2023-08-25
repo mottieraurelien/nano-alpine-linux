@@ -60,6 +60,10 @@ mkdir -p /etc/certificates/
 echo "Input password to use to protect your certificates (P12 and JKS) : "
 IFS= read -r certificatesPassword
 
+# Add the certificate password as environment variable :
+echo "export KEYSTORE_PASSWORD=$certificatesPassword" >> "$HOME"/.profile
+source "$HOME"/.profile
+
 # Generate a private key :
 openssl genrsa 4096 >/etc/certificates/private.key && chmod 400 /etc/certificates/private.key
 
@@ -67,11 +71,11 @@ openssl genrsa 4096 >/etc/certificates/private.key && chmod 400 /etc/certificate
 openssl req -new -x509 -nodes -sha256 -days 365 -subj "/C=HK/ST=Hong-Kong/L=Hong-Kong/O=nanonas/OU=dev/CN=nanonas.dev" -key /etc/certificates/private.key -out /etc/certificates/cert.crt
 
 # Converting the certificates into PKCS12 format (since some apps need PKCS12 or even JKS)
-openssl pkcs12 -name nanonas -inkey /etc/certificates/private.key -in /etc/certificates/cert.crt -export -out /etc/certificates/cert.p12 -password pass:"$certificatesPassword"
+openssl pkcs12 -name nanonas -inkey /etc/certificates/private.key -in /etc/certificates/cert.crt -export -out /etc/certificates/cert.p12 -password pass:"$KEYSTORE_PASSWORD"
 
 # Converting the PKCS12 certificate into JKS format :
-# keytool -delete -alias nanonas -keystore /etc/certificates/cert.jks -storepass "$certificatesPassword"    => command to run in case you want to re-generate the JKS.
-keytool -alias nanonas -importkeystore -srcstoretype pkcs12 -srckeystore /etc/certificates/cert.p12 -deststoretype JKS -destkeystore /etc/certificates/cert.jks -storepass "$certificatesPassword" -keypass "$certificatesPassword" -destkeypass "$certificatesPassword" -srcstorepass "$certificatesPassword" -deststorepass "$certificatesPassword"
+# keytool -delete -alias nanonas -keystore /etc/certificates/cert.jks -storepass "$KEYSTORE_PASSWORD"    => command to run in case you want to re-generate the JKS.
+keytool -alias nanonas -importkeystore -srcstoretype pkcs12 -srckeystore /etc/certificates/cert.p12 -deststoretype JKS -destkeystore /etc/certificates/cert.jks -storepass "$KEYSTORE_PASSWORD" -keypass "$KEYSTORE_PASSWORD" -destkeypass "$KEYSTORE_PASSWORD" -srcstorepass "$KEYSTORE_PASSWORD" -deststorepass "$KEYSTORE_PASSWORD"
 
 # This operation can take a while (20-60 minutes depending on your CPU)
 openssl dhparam -out /etc/certificates/dhparams.pem 4096
