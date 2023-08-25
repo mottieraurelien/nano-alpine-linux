@@ -17,9 +17,9 @@ fi
 # Shutdown Jenkins if exists :
 docker compose down
 rm -rf /pvs/jenkins
-deluser jenkins || true
 
 # Create jenkins user so that we avoid using root, and add the user to docker group :
+deluser jenkins || true
 adduser jenkins --disabled-password --no-create-home
 addgroup jenkins docker
 
