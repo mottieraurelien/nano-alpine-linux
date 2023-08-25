@@ -20,7 +20,7 @@ rm -rf /pvs/jenkins
 
 # Create jenkins user so that we avoid using root, and add the user to docker group :
 deluser jenkins || true
-adduser jenkins --disabled-password --no-create-home
+adduser jenkins --disabled-password --no-create-home --uid 2000
 addgroup jenkins docker
 
 # Create the persistent volume and give ownership :
