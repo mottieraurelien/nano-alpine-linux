@@ -24,6 +24,9 @@ apk add docker docker-compose
 rc-update add docker boot
 service docker start
 
+# Fixing permissions on docker socket (to allow other users to execute docker from containers) :
+chmod 666 /var/run/docker.sock
+
 # Add the current user to the docker group (so that no need to be root to run docker commands) :
 addgroup "$REGULAR_USER" docker
 
