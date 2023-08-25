@@ -86,6 +86,9 @@ apk add mesa-dri-gallium
 apk add libva-intel-driver
 echo "export MESA_LOADER_DRIVER_OVERRIDE=iris" >> /etc/profile
 
+# Create the folder that will host docker persistent volumes (different non-root users will need to be able to write their own data) :
+mkdir /pvs && chmod 777 /pvs
+
 ########################
 ### 3/ HEALTH CHECKS ###
 ########################
