@@ -5,6 +5,7 @@ services:
     container_name: jenkins
     restart: unless-stopped
     network_mode: bridge
+    user: jenkins
     environment:
       - JENKINS_OPTS=--httpPort=-1 --httpsPort=8083 --httpsKeyStore=/var/lib/jenkins/cert.jks --httpsKeyStorePassword=${KEYSTORE_PASSWORD}
     ports:
