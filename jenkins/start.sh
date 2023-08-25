@@ -24,7 +24,7 @@ adduser jenkins --disabled-password --no-create-home
 addgroup jenkins docker
 
 # Create the persistent volume and give ownership :
-mkdir -p /pvs/jenkins/home && chown -R jenkins:jenkins /pvs/jenkins
+mkdir -p /pvs/jenkins && chown -R jenkins:jenkins /pvs/jenkins
 
 # Run Jenkins :
 docker compose up --detach --force-recreate
