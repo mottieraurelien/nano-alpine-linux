@@ -26,7 +26,7 @@ apk update
 apk upgrade
 
 # Install a bunch of new packages:
-apk add ca-certificates curl htop jq nano nmap openssl
+apk add ca-certificates curl htop jq nano nmap openjdk17-jdk openssl
 
 # Define the regular account username (so that we don't use root) :
 echo "Input an username for the regular account : "
@@ -55,9 +55,26 @@ exit
 
 # Generate the custom unique set of Diffie-Hellman key exchange parameters to prevent the Logjam attack against the TLS protocol :
 mkdir -p /etc/certificates/
+
+# Generate self-signed certificates (until get official-signed by Cloudflare)
+echo "Input password to use to protect your certificates (P12 and JKS) : "
+IFS= read -r certificatesPassword
+
+# Generate a private key :
+openssl genrsa 4096 >/etc/certificates/private.key && chmod 400 /etc/certificates/private.key
+
+# Getting the public one :
+openssl req -new -x509 -nodes -sha256 -days 365 -subj "/C=HK/ST=Hong-Kong/L=Hong-Kong/O=nanonas/OU=dev/CN=nanonas.dev" -key /etc/certificates/private.key -out /etc/certificates/cert.crt
+
+# Converting the certificates into PKCS12 format (since some apps need PKCS12 or even JKS)
+openssl pkcs12 -name nanonas -inkey /etc/certificates/private.key -in /etc/certificates/cert.crt -export -out /etc/certificates/cert.p12 -password pass:"$certificatesPassword"
+
+# Converting the PKCS12 certificate into JKS format :
+# keytool -delete -alias nanonas -keystore /etc/certificates/cert.jks -storepass "$certificatesPassword"    => command to run in case you want to re-generate the JKS.
+keytool -alias nanonas -importkeystore -srcstoretype pkcs12 -srckeystore /etc/certificates/cert.p12 -deststoretype JKS -destkeystore /etc/certificates/cert.jks -storepass "$certificatesPassword" -keypass "$certificatesPassword" -destkeypass "$certificatesPassword" -srcstorepass "$certificatesPassword" -deststorepass "$certificatesPassword"
+
 # This operation can take a while (20-60 minutes depending on your CPU)
 openssl dhparam -out /etc/certificates/dhparams.pem 4096
-# Set the right permissions :
 chmod 400 /etc/certificates/dhparams.pem
 
 # Install Intel drivers (since my Intel CPU J4125 embeds an iGPU) :
