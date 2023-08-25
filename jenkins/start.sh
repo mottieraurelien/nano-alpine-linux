@@ -24,16 +24,7 @@ adduser jenkins --disabled-password --no-create-home
 addgroup jenkins docker
 
 # Create the persistent volume and give ownership :
-mkdir -p /pvs/jenkins && chown -R jenkins:jenkins /pvs/jenkins
-
-# Export jenkins user id and group id (since we will use a docker bind volume) :
-sed -i '/export JENKINS_UID=/d' "$HOME"/.profile
-sed -i '/export JENKINS_GID=/d' "$HOME"/.profile
-JENKINS_UID="$(grep -e "^jenkins" /etc/passwd | cut -d":" -f3)"
-echo "export JENKINS_UID=$JENKINS_UID" >>"$HOME"/.profile
-JENKINS_GID="$(grep -e "^jenkins" /etc/passwd | cut -d":" -f4)"
-echo "export JENKINS_GID=$JENKINS_GID" >>"$HOME"/.profile
-source "$HOME"/.profile
+mkdir -p /pvs/jenkins/jenkins_home && chown -R jenkins:jenkins /pvs/jenkins
 
 # Run Jenkins :
 docker compose up --detach --force-recreate
