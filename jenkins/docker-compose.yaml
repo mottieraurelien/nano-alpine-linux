@@ -13,5 +13,5 @@ services:
       - no-new-privileges:true
     volumes:
       - /pvs/jenkins/jenkins_home:/var/jenkins_home:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /usr/bin/docker:/usr/bin/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - /usr/bin/docker:/usr/bin/docker:rw
