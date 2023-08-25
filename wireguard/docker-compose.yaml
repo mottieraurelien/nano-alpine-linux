@@ -17,6 +17,8 @@ services:
     volumes:
       - /lib/modules:/lib/modules:ro
       - /pvs/wireguard/config:/config:rw
+    security_opt:
+      - no-new-privileges:true
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
