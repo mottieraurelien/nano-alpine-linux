@@ -6,12 +6,10 @@ services:
     restart: unless-stopped
     network_mode: bridge
     user: 2000:2000
-    privileged: true
     ports:
       - "18080:8080"
     security_opt:
       - no-new-privileges:true
     volumes:
       - /pvs/jenkins/jenkins_home:/var/jenkins_home:rw
-      - /var/run/docker.sock:/var/run/docker.sock:rw
-      - /usr/bin/docker:/usr/bin/docker:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
