@@ -1,8 +1,18 @@
 FROM rockylinux:9
 
 # Extra environment variables :
-ENV HOME="/root"
+ENV GID=2000
+ENV UID=2000
+ENV USERNAME=jenkins
+ENV HOME="/home/$USERNAME"
 ENV PROFILE="$HOME/.bashrc"
+
+# Create Jenkins user :
+RUN mkdir -p $HOME
+RUN groupadd -g $GID $USERNAME
+RUN useradd -r -u $UID -g $USERNAME -d $HOME $USERNAME
+RUN chown -R $USERNAME:$USERNAME $HOME
+WORKDIR $HOME
 
 # Tools :
 RUN yum install -y git wget
@@ -29,6 +39,7 @@ RUN wget https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/$MAVEN
     && mkdir -p $MAVEN_DIRECTORY \
     && mv $(ls -d /var/apache-maven-* | tail -1 | xargs)/* $MAVEN_DIRECTORY/ \
     && mkdir -p $HOME/.m2/repository \
+    && chown -R $USERNAME:$USERNAME $HOME/.m2 \
     && echo "export MAVEN_HOME=$MAVEN_DIRECTORY" >> $PROFILE \
     && echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> $PROFILE \
     && rm -f /$MAVEN_PACKAGE \
@@ -36,3 +47,6 @@ RUN wget https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/$MAVEN
 
 # Housekeeping :
 RUN yum clean all
+
+# Switch to Jenkins user since no need root anymore :
+USER $USERNAME

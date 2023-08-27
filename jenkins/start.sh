@@ -10,6 +10,18 @@ if [ "$(whoami)" != "root" ]; then
   exit 1
 fi
 
+# [docker is required]
+if [ -z "$(command -v docker)" ]; then
+  echo "Docker installation failed"
+  exit 1
+fi
+
+# [docker-compose is required]
+if [ -z "$(command -v docker-compose)" ]; then
+  echo "Docker-compose installation failed"
+  exit 1
+fi
+
 ###############
 ### 2/ MAIN ###
 ###############
@@ -28,6 +40,9 @@ mkdir -p /pvs/jenkins/jenkins_home && chown -R jenkins:jenkins /pvs/jenkins
 
 # Run Jenkins :
 docker compose up --detach --force-recreate
+
+# Build Jenkins base image for agents :
+docker build -t jenkins-agent-base-image:1.0.0 -f Dockerfile .
 
 # Success :
 exit 0
