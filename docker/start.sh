@@ -42,6 +42,7 @@ if [ -z "$(command -v docker)" ]; then
   echo "Docker installation failed"
   exit 1
 fi
+
 # [docker-compose has been successfully installed and regular account can run commands]
 if [ -z "$(command -v docker-compose)" ]; then
   echo "Docker-compose installation failed"

@@ -10,6 +10,12 @@ if [ "$(whoami)" != "root" ]; then
   exit 1
 fi
 
+# [docker-compose is required]
+if [ -z "$(command -v docker-compose)" ]; then
+  echo "Docker-compose installation failed"
+  exit 1
+fi
+
 ###############
 ### 2/ MAIN ###
 ###############
