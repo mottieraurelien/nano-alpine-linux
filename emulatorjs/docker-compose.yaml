@@ -1,0 +1,19 @@
+version: "3"
+services:
+  portainer:
+    image: lscr.io/linuxserver/emulatorjs:latest
+    container_name: emulatorjs
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Hong_Kong
+    ports:
+      - "80:80"
+      - "3000:3000"
+    volumes:
+      - /pvs/emulatorjs/config:/config:rw
+      - /pvs/emulatorjs/data:/data:rw
+    security_opt:
+      - no-new-privileges:true
